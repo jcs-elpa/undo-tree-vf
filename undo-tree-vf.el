@@ -58,28 +58,11 @@
   (let ((recenter-positions '(middle)))
     (ignore-errors (recenter-top-bottom))))
 
-(defmacro undo-tree-vf--if-buffer-window (buffer-or-name then &rest else)
-  "Execute THEN in window BUFFER-OR-NAME; otherwise ELSE will be executed."
-  (declare (indent 2) (debug t))
-  `(if-let ((win (ignore-errors (get-buffer-window-list ,buffer-or-name))))
-       (with-selected-window (nth 0 win) ,then)
-     ,@else))
-
-(defmacro undo-tree-vf--setup (arg &rest body)
-  "Set up BODY for undo/redo.
-
-If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
-  (declare (indent 1))
-  `(if (not undo-tree-mode)
-       (call-interactively (if ,arg undo-tree-vf-fallback-undo
-                             undo-tree-vf-fallback-redo))
-     ,@body))
-
 ;;
 ;; (@* "Entry" )
 ;;
 
-(defun undo-tree-vf--kill-visualizer ()
+(defun undo-tree-vf--kill-visualizer (&rest _)
   "Safe version `undo-tree-kill-visualizer'."
   (when (and undo-tree-mode undo-tree-vf-mode)
     (undo-tree-kill-visualizer)))
@@ -104,6 +87,23 @@ If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
 ;;
 ;; (@* "Core" )
 ;;
+
+(defmacro undo-tree-vf--if-buffer-window (buffer-or-name then &rest else)
+  "Execute THEN in window BUFFER-OR-NAME; otherwise ELSE will be executed."
+  (declare (indent 2) (debug t))
+  `(if-let ((win (ignore-errors (get-buffer-window-list ,buffer-or-name))))
+       (with-selected-window (nth 0 win) ,then)
+     ,@else))
+
+(defmacro undo-tree-vf--setup (arg &rest body)
+  "Set up BODY for undo/redo.
+
+If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
+  (declare (indent 1))
+  `(if (or (not undo-tree-mode) (not undo-tree-vf-mode))
+       (call-interactively (if ,arg undo-tree-vf-fallback-undo
+                             undo-tree-vf-fallback-redo))
+     ,@body))
 
 (defun undo-tree-vf--visualize ()
   "Call `undo-tree-visualize' only in window that has higher height."
