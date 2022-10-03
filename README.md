@@ -6,6 +6,13 @@
 
 [![CI](https://github.com/jcs-elpa/undo-tree-vf/actions/workflows/test.yml/badge.svg)](https://github.com/jcs-elpa/undo-tree-vf/actions/workflows/test.yml)
 
+## 🔨 Usage
+
+```elisp
+(define-key global-map (kbd "C-z") #'undo-tree-vf-undo)
+(define-key global-map (kbd "C-y") #'undo-tree-vf-redo)
+```
+
 ## Contribute
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
