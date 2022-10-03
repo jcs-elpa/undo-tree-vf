@@ -62,11 +62,6 @@
 ;; (@* "Entry" )
 ;;
 
-(defun undo-tree-vf--kill-visualizer (&rest _)
-  "Safe version `undo-tree-kill-visualizer'."
-  (when (and undo-tree-mode undo-tree-vf-mode)
-    (undo-tree-kill-visualizer)))
-
 (defun undo-tree-vf-mode--enable ()
   "Enable function `undo-tree-vf-mode'."
   (advice-add #'save-buffer :after #'undo-tree-vf--kill-visualizer)
@@ -83,6 +78,11 @@
   :require 'undo-tree-vf-mode
   :group 'undo-tree-vf
   (if undo-tree-vf-mode (undo-tree-vf-mode--enable) (undo-tree-vf-mode--disable)))
+
+(defun undo-tree-vf--kill-visualizer (&rest _)
+  "Safe version `undo-tree-kill-visualizer'."
+  (when (and undo-tree-mode undo-tree-vf-mode)
+    (undo-tree-kill-visualizer)))
 
 ;;
 ;; (@* "Core" )
