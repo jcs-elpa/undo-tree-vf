@@ -49,7 +49,6 @@
   "Fallback redo key."
   :type 'function
   :group 'undo-tree-vf)
-
 ;;
 ;; (@* "Util" )
 ;;
@@ -75,6 +74,28 @@ If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
        (call-interactively (if ,arg undo-tree-vf-fallback-undo
                              undo-tree-vf-fallback-redo))
      ,@body))
+
+;;
+;; (@* "Entry" )
+;;
+
+(defun undo-tree-vf-mode--enable ()
+  "Enable function `undo-tree-vf-mode'."
+  (advice-add #'save-buffer :after #'undo-tree-kill-visualizer)
+  (advice-add #'kill-this-buffer :after #'undo-tree-kill-visualizer))
+
+(defun undo-tree-vf-mode--disable ()
+  "Disable function `undo-tree-vf-mode'."
+  (advice-remove #'save-buffer #'undo-tree-kill-visualizer)
+  (advice-remove #'kill-this-buffer  #'undo-tree-kill-visualizer))
+
+;;;###autoload
+(define-minor-mode undo-tree-vf-mode
+  "Minor mode `undo-tree-vf-mode'."
+  :global t
+  :require 'undo-tree-vf-mode
+  :group 'undo-tree-vf
+  (if undo-tree-vf-mode (undo-tree-vf-mode--enable) (undo-tree-vf-mode--disable)))
 
 ;;
 ;; (@* "Core" )
@@ -108,6 +129,7 @@ If UD is non-nil, do undo.  If UD is nil, do redo."
   (interactive)
   (undo-tree-vf--undo-or-redo t))
 
+;;;###autoload
 (defun undo-tree-vf-redo ()
   "Redo with visualizer."
   (interactive)
