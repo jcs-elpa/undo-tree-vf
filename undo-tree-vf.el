@@ -79,20 +79,24 @@ If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
 ;; (@* "Entry" )
 ;;
 
+(defun undo-tree-vf--kill-visualizer ()
+  "Safe version `undo-tree-kill-visualizer'."
+  (when (and undo-tree-mode undo-tree-vf-mode)
+    (undo-tree-kill-visualizer)))
+
 (defun undo-tree-vf-mode--enable ()
   "Enable function `undo-tree-vf-mode'."
-  (advice-add #'save-buffer :after #'undo-tree-kill-visualizer)
-  (advice-add #'kill-this-buffer :after #'undo-tree-kill-visualizer))
+  (advice-add #'save-buffer :after #'undo-tree-vf--kill-visualizer)
+  (advice-add #'kill-this-buffer :after #'undo-tree-vf--kill-visualizer))
 
 (defun undo-tree-vf-mode--disable ()
   "Disable function `undo-tree-vf-mode'."
-  (advice-remove #'save-buffer #'undo-tree-kill-visualizer)
-  (advice-remove #'kill-this-buffer  #'undo-tree-kill-visualizer))
+  (advice-remove #'save-buffer #'undo-tree-vf--kill-visualizer)
+  (advice-remove #'kill-this-buffer  #'undo-tree-vf--kill-visualizer))
 
 ;;;###autoload
 (define-minor-mode undo-tree-vf-mode
   "Minor mode `undo-tree-vf-mode'."
-  :global t
   :require 'undo-tree-vf-mode
   :group 'undo-tree-vf
   (if undo-tree-vf-mode (undo-tree-vf-mode--enable) (undo-tree-vf-mode--disable)))
