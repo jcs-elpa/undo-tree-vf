@@ -7,7 +7,7 @@
 
 (package-file "undo-tree-vf.el")
 
-(source "elpa")
+(source "gnu")
 (source "jcs-elpa")
 (source "melpa")
 
