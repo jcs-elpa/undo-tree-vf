@@ -108,11 +108,10 @@ If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
 (defun undo-tree-vf--visualize ()
   "Call `undo-tree-visualize' only in window that has higher height."
   (save-window-excursion (undo-tree-visualize))
-  (when (< (length (window-list)) 2)
-    (display-buffer undo-tree-visualizer-buffer-name
-                    `((display-buffer-in-direction)
-                      (dedicated . t))))
-  (with-selected-window (get-largest-window nil t t)
+  (with-selected-window (or (get-largest-window nil nil t)
+                            (display-buffer undo-tree-visualizer-buffer-name
+                                            `((display-buffer-in-direction)
+                                              (dedicated . t))))
     (switch-to-buffer undo-tree-visualizer-buffer-name)
     (undo-tree-vf--recenter-top-bottom)
     (fill-page-if-unfill)))
