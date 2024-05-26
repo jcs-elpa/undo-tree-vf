@@ -1,6 +1,6 @@
 (package "undo-tree-vf"
          "0.1.0"
-         "visualizer follow mode for undo-tree")
+         "Visualizer follow mode for undo-tree")
 
 (website-url "https://github.com/jcs-elpa/undo-tree-vf")
 (keywords "convenience")

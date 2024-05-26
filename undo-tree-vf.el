@@ -1,4 +1,4 @@
-;;; undo-tree-vf.el --- visualizer follow mode for undo-tree  -*- lexical-binding: t; -*-
+;;; undo-tree-vf.el --- Visualizer follow mode for undo-tree  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022-2024  Shen, Jen-Chieh
 
@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 ;;
-;; visualizer follow mode for undo-tree.
+;; Visualizer follow mode for undo-tree.
 ;;
 
 ;;; Code:
@@ -35,7 +35,7 @@
 (require 'fill-page)
 
 (defgroup undo-tree-vf nil
-  "visualizer follow mode for undo-tree."
+  "Visualizer follow mode for undo-tree."
   :prefix "undo-tree-vf-"
   :group 'tool
   :link '(url-link :tag "Repository" "https://github.com/jcs-elpa/undo-tree-vf"))
@@ -108,7 +108,11 @@ If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
 (defun undo-tree-vf--visualize ()
   "Call `undo-tree-visualize' only in window that has higher height."
   (save-window-excursion (undo-tree-visualize))
-  (with-selected-window (get-largest-window nil nil t)
+  (when (< (length (window-list)) 2)
+    (display-buffer undo-tree-visualizer-buffer-name
+                    `((display-buffer-in-direction)
+                      (dedicated . t))))
+  (with-selected-window (get-largest-window nil t t)
     (switch-to-buffer undo-tree-visualizer-buffer-name)
     (undo-tree-vf--recenter-top-bottom)
     (fill-page-if-unfill)))
