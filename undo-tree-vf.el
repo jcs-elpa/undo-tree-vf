@@ -49,14 +49,6 @@
   "Fallback redo key."
   :type 'function
   :group 'undo-tree-vf)
-;;
-;; (@* "Util" )
-;;
-
-(defun undo-tree-vf--recenter-top-bottom ()
-  "Recenter to center."
-  (let ((recenter-positions '(middle)))
-    (ignore-errors (recenter-top-bottom))))
 
 ;;
 ;; (@* "Entry" )
@@ -64,13 +56,13 @@
 
 (defun undo-tree-vf-mode--enable ()
   "Enable function `undo-tree-vf-mode'."
-  (advice-add #'save-buffer :after #'undo-tree-vf--kill-visualizer)
-  (advice-add #'kill-this-buffer :after #'undo-tree-vf--kill-visualizer))
+  (add-hook 'window-buffer-change-functions #'undo-tree-vf--window-buffer-change)
+  (advice-add #'save-buffer :after #'undo-tree-vf--kill-visualizer))
 
 (defun undo-tree-vf-mode--disable ()
   "Disable function `undo-tree-vf-mode'."
-  (advice-remove #'save-buffer #'undo-tree-vf--kill-visualizer)
-  (advice-remove #'kill-this-buffer  #'undo-tree-vf--kill-visualizer))
+  (remove-hook 'window-buffer-change-functions #'undo-tree-vf--window-buffer-change)
+  (advice-remove #'save-buffer #'undo-tree-vf--kill-visualizer))
 
 ;;;###autoload
 (define-minor-mode undo-tree-vf-mode
@@ -81,12 +73,34 @@
 
 (defun undo-tree-vf--kill-visualizer (&rest _)
   "Safe version `undo-tree-kill-visualizer'."
-  (when (and undo-tree-mode undo-tree-vf-mode)
+  (when (undo-tree-vs--enabled-p)
     (undo-tree-kill-visualizer)))
+
+;;
+;; (@* "Util" )
+;;
+
+(defun undo-tree-vs--enabled-p ()
+  "Return non-nil when this package is enabled."
+  (and undo-tree-mode undo-tree-vf-mode))
+
+(defun undo-tree-vf--recenter-top-bottom ()
+  "Recenter to center."
+  (let ((recenter-positions '(middle)))
+    (ignore-errors (recenter-top-bottom))))
 
 ;;
 ;; (@* "Core" )
 ;;
+
+(defun undo-tree-vf--window-buffer-change (&rest _)
+  "Window buffer change."
+  (when (undo-tree-vs--enabled-p)
+    (when-let ((buf (current-buffer))
+               (win (get-buffer-window undo-tree-visualizer-buffer-name)))
+      (with-selected-window win
+        (unless (equal buf undo-tree-visualizer-parent-buffer)
+          (undo-tree-vf--kill-visualizer))))))
 
 (defmacro undo-tree-vf--if-buffer-window (buffer-or-name then &rest else)
   "Execute THEN in window BUFFER-OR-NAME; otherwise ELSE will be executed."
