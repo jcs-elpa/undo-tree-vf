@@ -96,7 +96,8 @@
 (defun undo-tree-vf--window-buffer-change (&rest _)
   "Window buffer change."
   (when (undo-tree-vs--enabled-p)
-    (when-let ((buf (current-buffer))
+    (when-let (((not (minibuffer-window-active-p (selected-window))))
+               (buf (current-buffer))
                (win (get-buffer-window undo-tree-visualizer-buffer-name)))
       (with-selected-window win
         (unless (equal buf undo-tree-visualizer-parent-buffer)
