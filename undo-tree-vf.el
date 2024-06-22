@@ -77,6 +77,12 @@
     (undo-tree-kill-visualizer)))
 
 ;;
+;; (@* "Externals" )
+;;
+
+(defvar cogru-inhibit-sync-hooks)
+
+;;
 ;; (@* "Util" )
 ;;
 
@@ -115,10 +121,11 @@
 
 If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
   (declare (indent 1))
-  `(if (or (not undo-tree-mode) (not undo-tree-vf-mode))
-       (call-interactively (if ,arg undo-tree-vf-fallback-undo
-                             undo-tree-vf-fallback-redo))
-     ,@body))
+  `(let ((cogru-inhibit-sync-hooks t))
+     (if (or (not undo-tree-mode) (not undo-tree-vf-mode))
+         (call-interactively (if ,arg undo-tree-vf-fallback-undo
+                               undo-tree-vf-fallback-redo))
+       ,@body)))
 
 (defun undo-tree-vf--visualize ()
   "Call `undo-tree-visualize' only in window that has higher height."
