@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/jcs-elpa/undo-tree-vf
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1") (undo-tree "0.8.2") (fill-page "0.3.7"))
+;; Package-Requires: ((emacs "27.1") (undo-tree "0.8.2") (fill-page "0.3.7"))
 ;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
@@ -77,12 +77,6 @@
     (undo-tree-kill-visualizer)))
 
 ;;
-;; (@* "Externals" )
-;;
-
-(defvar cogru-inhibit-sync-hooks)
-
-;;
 ;; (@* "Util" )
 ;;
 
@@ -121,11 +115,10 @@
 
 If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
   (declare (indent 1))
-  `(let ((cogru-inhibit-sync-hooks t))
-     (if (or (not undo-tree-mode) (not undo-tree-vf-mode))
-         (call-interactively (if ,arg undo-tree-vf-fallback-undo
-                               undo-tree-vf-fallback-redo))
-       ,@body)))
+  `(if (or (not undo-tree-mode) (not undo-tree-vf-mode))
+       (call-interactively (if ,arg undo-tree-vf-fallback-undo
+                             undo-tree-vf-fallback-redo))
+     ,@body))
 
 (defun undo-tree-vf--visualize ()
   "Call `undo-tree-visualize' only in window that has higher height."
@@ -134,7 +127,7 @@ If `undo-tree-mode' is not valid, we call undo/redo function according to ARG"
                             (display-buffer undo-tree-visualizer-buffer-name
                                             `((display-buffer-in-direction)
                                               (dedicated . t))))
-    (switch-to-buffer undo-tree-visualizer-buffer-name)
+    (switch-to-buffer undo-tree-visualizer-buffer-name t)
     (undo-tree-vf--recenter-top-bottom)
     (fill-page-if-unfill)))
 
