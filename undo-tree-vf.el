@@ -74,7 +74,7 @@
 (defun undo-tree-vf--kill-visualizer (&rest _)
   "Safe version `undo-tree-kill-visualizer'."
   (when (undo-tree-vs--enabled-p)
-    (undo-tree-kill-visualizer)))
+    (ignore-errors (undo-tree-kill-visualizer))))
 
 ;;
 ;; (@* "Util" )
@@ -96,9 +96,10 @@
 (defun undo-tree-vf--window-buffer-change (&rest _)
   "Window buffer change."
   (when (undo-tree-vs--enabled-p)
-    (when-let (((not (minibuffer-window-active-p (selected-window))))
-               (buf (current-buffer))
-               (win (get-buffer-window undo-tree-visualizer-buffer-name)))
+    (when-let* (((not (minibuffer-window-active-p (selected-window))))
+                (buf (current-buffer))
+                (win (get-buffer-window undo-tree-visualizer-buffer-name))
+                ((window-live-p win)))
       (with-selected-window win
         (unless (equal buf undo-tree-visualizer-parent-buffer)
           (undo-tree-vf--kill-visualizer))))))
