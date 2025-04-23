@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "undo-tree-vf"
          "0.1.0"
          "Visualizer follow mode for undo-tree")
